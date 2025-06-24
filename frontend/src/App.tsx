@@ -47,25 +47,50 @@ function App() {
 
   return (
     <div className='container'>
-      <form >
+      <form>
         <div className="field">
           <label htmlFor="amount">Amount</label>
-          <input name='amount' type="number" value={amount} onChange={(e) => setAmount(+e.target.value)} />
+          <input 
+            name='amount' 
+            type="number" 
+            value={amount} 
+            onChange={(e) => setAmount(+e.target.value)}
+            placeholder="Enter transaction amount"
+          />
         </div>
-         <div className="field">
+        <div className="field">
           <label htmlFor="description">Description</label>
-          <input name='description' type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <input 
+            name='description' 
+            type="text" 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter transaction description"
+          />
         </div>
-        <button type='button' className='register_button' onClick={handleSubmit}>Register</button>
+        <button type='button' className='register_button' onClick={handleSubmit}>
+          Register Transaction
+        </button>
       </form>
 
       <div className="list">
-        {transactions.map((t, index) => {
-          return <div key={index}>
-            <span>{t.description}</span>
-            <span>{t.amount}</span>
+        <h2>Transaction History</h2>
+        
+        {transactions.length === 0 ? (
+          <div className="empty-state">
+            <h3>No transactions found</h3>
+            <p>Add your first transaction using the form above</p>
           </div>
-        })}
+        ) : (
+          transactions.map((t, index) => (
+            <div key={index} className="transaction-item">
+              <span className="transaction-description">{t.description}</span>
+              <span className={`transaction-amount ${t.amount >= 0 ? 'positive' : 'negative'}`}>
+                {t.amount >= 0 ? '+' : ''}R$ {t.amount.toFixed(2)}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   )
