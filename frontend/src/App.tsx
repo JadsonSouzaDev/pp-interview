@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
+interface Transaction {
+  amount: number;
+  description: string;
+}
+
 function App() {
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState('');
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     getTransactions();
-
   }, [])
 
   const getTransactions = async () => {
-    const response   = await fetch('http://localhost:3001/transactions');
+    const response = await fetch('http://localhost:3001/transactions');
     if (response.ok){
       const transactions = await response.json();
       setTransactions(transactions);
@@ -20,17 +24,24 @@ function App() {
   }
 
   const handleSubmit = async () => {
+    const transactionData = { amount, description };
+    
     const response = await fetch('http://localhost:3001/transactions', {
-      body: JSON.stringify({amount, description}),
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(transactionData)
     })
 
     if(response.ok){      
       const transaction = await response.json();
-      const newTransactions  = [...transactions, transaction];
-      setTransactions(newTransactions)
+      const newTransactions = [...transactions, transaction];
+      setTransactions(newTransactions);
       setAmount(0);
-      setDescription('');      
+      setDescription('');
+    } else {
+      console.error('Error:', response.status, response.statusText);
     }
   }
 
@@ -49,8 +60,8 @@ function App() {
       </form>
 
       <div className="list">
-        {transactions.map((t) => {
-          return <div>
+        {transactions.map((t, index) => {
+          return <div key={index}>
             <span>{t.description}</span>
             <span>{t.amount}</span>
           </div>
